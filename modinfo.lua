@@ -1,8 +1,8 @@
 --The name of the mod displayed in the 'mods' screen.
-name = "Chicken AI Example"
+name = "Custom Behaviour Example"
 
 --A description of the mod.
-description = "This mod is a demonstration of custom-made behaviours (with many liberties taken and forum-searching), utilising Cheerio of Klei Entertainment's Creature Mod Tutorial series assets. Don't expect much more other than a demonstration for a project."
+description = "This mod is a demonstration of custom-made behaviours (with many liberties taken and forum-searching), utilising Cheerio of Klei Entertainment's Creature Mod Tutorial series assets. For a project."
 
 --Who wrote this awesome mod?
 author = "ChickenDodo & Cheerio of Klei Entertainment"
