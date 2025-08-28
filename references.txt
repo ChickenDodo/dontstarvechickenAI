@@ -1,0 +1,7 @@
+reference points
+
+getting player position
+https://forums.kleientertainment.com/forums/topic/71160-how-to-get-nearby-player/
+
+finding a player's specific inventory item
+https://forums.kleientertainment.com/forums/topic/127050-trying-to-find-an-item-on-the-players-inventory/

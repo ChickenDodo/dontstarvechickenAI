@@ -1,0 +1,1 @@
+Building 'D:\Steam\steamapps\common\Don't Starve Mod Tools\mod_tools\..\..\dont_starve\mods\creature_tutorial_07/exported\tut07.scml'.
