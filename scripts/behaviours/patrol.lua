@@ -1,4 +1,4 @@
-Patrol = Class(BehaviourNode, function(self, inst, radius, num_points, patrol_wait)
+Patrol = Class(BehaviourNode, function(self, inst, radius, num_points, patrol_wait_time)
     BehaviourNode._ctor(self, "Patrol")
     self.inst = inst
     self.waittime = 0              
@@ -6,7 +6,7 @@ Patrol = Class(BehaviourNode, function(self, inst, radius, num_points, patrol_wa
     --Patrol settings
     self.radius = radius           --The range at which the patrol points can spawn within
     self.num_points = num_points   --How many patrol points to generate
-    self.patrol_wait = patrol_wait
+    self.patrol_wait_time = patrol_wait_time
 
     --Waypoints
     self.waypoints = {}            --Empty list for patrol points, we'll generate these later
@@ -60,7 +60,7 @@ function Patrol:PickNextMove()
             self.current_wp = 1                              --Set back to 1, repeating the cycle
         end
     end
-        self.waittime = GetTime() + self.patrol_wait         --Sees how long it should wait b4 moving. GetTime() is a function which grabs the current game's time
+        self.waittime = GetTime() + self.patrol_wait_time         --Sees how long it should wait b4 moving. GetTime() is a function which grabs the current game's time
 end
 
 --[[ THIS FREEZES ENTIRE GAME DUE TO BEING SINGLE-THREADED!!!

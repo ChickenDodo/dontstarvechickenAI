@@ -2,21 +2,22 @@ require "behaviours/patrol"
 require "behaviours/followplayer"
 require "behaviours/journey"
 
---RunAway
+--[[RunAway
 --This is the distance at which our creature will start fleeing.
-local AVOID_PLAYER_DIST = 8
+local AVOID_PLAYER_DIST = 8 --Ingame units
 --This is the distance at which our creature will stop fleeing.
 local AVOID_PLAYER_STOP = 18
+]]
 
 --Patrol
---This is the number of patrol points that generate
-local NUMBER_OF_PATROL_POINTS = 4
 --This is the range at which the patrol points can spawn within
 local PATROL_POINT_RADIUS_SPAWN = 10
---This is the radius at which the creature checks for the tallbird egg
-local ITEM_CHECK_RADIUS = 15 --this should be bigger than PATROL_POINT_RADIUS_SPAWN
+--This is the number of patrol points that generate
+local NUMBER_OF_PATROL_POINTS = 4
 --This is the wait time before moving onto the next patrol point
-local PATROL_WAIT = 5
+local PATROL_WAIT_TIME = 5 --Seconds
+--This is the radius at which the creature checks for the tallbird egg
+local GROUND_SCAN_RADIUS = 15 --this should be bigger than PATROL_POINT_RADIUS_SPAWN
 
 --Follow Player
 local FOLLOW_PLAYER_MINIMUM_DISTANCE = 2
@@ -24,14 +25,14 @@ local FOLLOW_PLAYER_TARGET_DIST = 5
 local FOLLOW_PLAYER_MAX_DIST = 10
 
 --Flower Journey
-local FLOWER_SEARCH_RADIUS = 20
-local WAIT_TIME = 2
+local JOURNEY_SEARCH_RADIUS = 20
+local JOURNEY_WAIT_TIME = 2
 
 --function to return if a tallbirdegg is nearby
 local function IsTallbirdEggNear(inst, radius)
     local egg = FindEntity(inst, radius, function(item)
         if not item or type(item) ~= "table" then return false end
-        if item.prefab ~= "tallbirdegg" then return false end
+        if item.prefab ~= "tallbirdegg" then return false end --We can change the item.prefab to any other item we want
         return true
     end)
     return egg ~= nil
@@ -92,9 +93,9 @@ function tut08_brain:OnStart()
 		
         --Patrol if tallbirdegg is nearby
         WhileNode(function() 
-            return IsTallbirdEggNear(self.inst, ITEM_CHECK_RADIUS)
+            return IsTallbirdEggNear(self.inst, GROUND_SCAN_RADIUS)
         end, "PatrolIfEggNear",
-            Patrol(self.inst, PATROL_POINT_RADIUS_SPAWN, NUMBER_OF_PATROL_POINTS, PATROL_WAIT)
+            Patrol(self.inst, PATROL_POINT_RADIUS_SPAWN, NUMBER_OF_PATROL_POINTS, PATROL_WAIT_TIME)
         ),
 
         -- WhileNode: follow player only if they have seeds
@@ -106,7 +107,7 @@ function tut08_brain:OnStart()
         ),
         
         -- Go to nearest evergreen
-        GoToFlowerJourney(self.inst, FLOWER_SEARCH_RADIUS, WAIT_TIME),
+        GoToFlowerJourney(self.inst, JOURNEY_SEARCH_RADIUS, JOURNEY_WAIT_TIME),
 
         --Here we tell our creature that if it's not running away, it should simply stand still.
         StandStill(self.inst, function() return true end),

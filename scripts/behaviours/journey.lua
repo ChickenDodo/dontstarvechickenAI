@@ -1,10 +1,10 @@
 --Define a new behavior node class for visiting flowers
-GoToFlowerJourney = Class(BehaviourNode, function(self, inst, flower_search_radius, wait_time)
+GoToFlowerJourney = Class(BehaviourNode, function(self, inst, journey_search_radius, journey_wait_time)
     BehaviourNode._ctor(self, "GoToFlowerJourney")  
     self.inst = inst                                
 
-    self.flower_search_radius = flower_search_radius --Set the maximum distance to search for flowers
-    self.wait_time = wait_time                       --Set how long to wait at a flower before moving on
+    self.journey_search_radius = journey_search_radius --Set the maximum distance to search for flowers
+    self.journey_wait_time = journey_wait_time                       --Set how long to wait at a flower before moving on
     self.currenttarget = nil                         --Current flower being targeted
     self.waiting = false                             --Whether the creature is currently waiting at a flower
 end)
@@ -12,10 +12,10 @@ end)
 --Collect all flowers within
 function GoToFlowerJourney:GetTargets()
     local targets = {}                                     --Empty table to store flowers
-    local flower_search_radius = self.flower_search_radius --Shortcut to the search radius
+    local journey_search_radius = self.journey_search_radius --Shortcut to the search radius
 
     --Find the first flower entity within radius
-    local flower = FindEntity(self.inst, flower_search_radius, function(item)
+    local flower = FindEntity(self.inst, journey_search_radius, function(item)
         return item and item:IsValid() and item:HasTag("flower") 
     end)
 
@@ -23,7 +23,7 @@ function GoToFlowerJourney:GetTargets()
     while flower do
         table.insert(targets, flower)               --Add this flower to the targets list
         flower._skip_next_search = true             --Temporarily mark it so it's not found again
-        flower = FindEntity(self.inst, flower_search_radius, function(item)
+        flower = FindEntity(self.inst, journey_search_radius, function(item)
             return item and item:IsValid() and item:HasTag("flower") and not item._skip_next_search
         end)
     end
@@ -64,7 +64,7 @@ end
 function GoToFlowerJourney:Visit()
     if self.waiting then                            --If currently waiting at a flower
         self.status = RUNNING                       --Keep status running
-        self:Sleep(self.wait_time)                  --Wait for the defined wait_time
+        self:Sleep(self.journey_wait_time)                  --Wait for the defined wait_time
         self.waiting = false                        --Done waiting
         self.currenttarget = nil                    --Clear the target to pick a new one next
         return
@@ -93,7 +93,7 @@ function GoToFlowerJourney:Visit()
     end
 
     --Move towards the flower
-    local should_run = dist_sq > (self.flower_search_radius * 0.5)^2 --Run if far away
+    local should_run = dist_sq > (self.journey_search_radius * 0.5)^2 --Run if far away
     if should_run then
         self.inst.components.locomotor:GoToPoint(target_pos, nil, true) --Run to flower
     else
