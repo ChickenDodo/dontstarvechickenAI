@@ -38,6 +38,14 @@ local function IsTallbirdEggNear(inst, radius)
     return egg ~= nil
 end
 
+--https://vietnd69.github.io/dst-api-webdocs/docs/game-scripts/core-systems/fundamentals/utilities/simutil#find-closest-entity
+--[[ Doing it this way might not apply well as we might want to only trigger it with a tallbird egg, not other types of eggs
+local entity, distsq = FindClosestEntity(player, 20, false, {"tree"}, {"burnt"})
+if entity then
+    print("Found tree at distance:", math.sqrt(distsq))
+end
+]]
+
 -- Function to check if an item is seeds
 local function is_seeds(item)
     return item.prefab == "seeds"
@@ -107,7 +115,7 @@ function tut08_brain:OnStart()
         ),
         
         -- Go to nearest evergreen
-        GoToFlowerJourney(self.inst, JOURNEY_SEARCH_RADIUS, JOURNEY_WAIT_TIME),
+        Journey(self.inst, JOURNEY_SEARCH_RADIUS, JOURNEY_WAIT_TIME),
 
         --Here we tell our creature that if it's not running away, it should simply stand still.
         StandStill(self.inst, function() return true end),

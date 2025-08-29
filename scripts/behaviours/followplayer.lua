@@ -12,6 +12,13 @@ Follow = Class(BehaviourNode, function(self, inst, min_dist, target_dist, max_di
     self.action = "STAND"                           --Current action state (APPROACH, BACKOFF, or STAND)
 end)
 
+--[[-- Old (deprecated)
+local player = GetPlayer()
+
+-- New (recommended)
+local player = ThePlayer
+]]
+
 --Get the closest player as the follow target
 function Follow:GetTarget()
     local player = GetClosestInstWithTag("player", self.inst, self.search_radius) --Find closest player within radius

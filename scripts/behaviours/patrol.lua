@@ -1,27 +1,27 @@
-Patrol = Class(BehaviourNode, function(self, inst, radius, num_points, patrol_wait_time)
+Patrol = Class(BehaviourNode, function(self, inst, patrol_radius, number_of_patrol_points, patrol_wait_time)
     BehaviourNode._ctor(self, "Patrol")
     self.inst = inst
     self.waittime = 0              
 
     --Patrol settings
-    self.radius = radius           --The range at which the patrol points can spawn within
-    self.num_points = num_points   --How many patrol points to generate
-    self.patrol_wait_time = patrol_wait_time
+    self.patrol_radius = patrol_radius                     --The range at which the patrol points can spawn within
+    self.number_of_patrol_points = number_of_patrol_points --How many patrol points to generate
+    self.patrol_wait_time = patrol_wait_time               --How long to wait at each point in seconds
 
     --Waypoints
     self.waypoints = {}            --Empty list for patrol points, we'll generate these later
     self.current_wp = 1            --We are currently at waypoint 1
 
-    --generate patrol points once spawned
+    --Generate patrol points once spawned
     self:GenerateWaypoints()
 end)
 
 function Patrol:GenerateWaypoints()
     local x, y, z = self.inst.Transform:GetWorldPosition()   --We'll never use y as we never go up or down in the worldspace
 
-    for i = 1, self.num_points do                            --Run loop for each num_points we want
+    for i = 1, self.number_of_patrol_points do               --Run loop for each number_of_patrol_points we want
         local angle = math.random() * 2 * PI                 --Pick a random angle from spawn point * 2 for a full circle
-        local dist = math.random() * self.radius             --Pick a random distance between 0 and the chosen radius
+        local dist = math.random() * self.patrol_radius             --Pick a random distance between 0 and the chosen patrol_radius
         --Converts the creature's spawn position, angle + distance into world coordinates
         local wp_x = x + math.cos(angle) * dist              --We get the cosine to get the horizontal (x axis) offset, moves left/right
         local wp_z = z + math.sin(angle) * dist              --We get the sin to get the vertical (z axis) offset, moves forward/back
@@ -49,7 +49,7 @@ end
 function Patrol:PickNextMove()
     if #self.waypoints > 0 then                              --If there are any patrol points left
         local target = self.waypoints[self.current_wp]       --Target variable = our generated ones
-        if target ~= nil then                                --If we have no target...
+        if target ~= nil then                                --If we still have targets left...
             self.inst.components.locomotor:GoToPoint(target) --Use the locomotor component to tell it to go there
         end
         --Cycle through patrol points
@@ -60,7 +60,7 @@ function Patrol:PickNextMove()
             self.current_wp = 1                              --Set back to 1, repeating the cycle
         end
     end
-        self.waittime = GetTime() + self.patrol_wait_time         --Sees how long it should wait b4 moving. GetTime() is a function which grabs the current game's time
+        self.waittime = GetTime() + self.patrol_wait_time         --Sees how long it should wait b4 moving. GetTime() is a function which grabs the elapsed game time
 end
 
 --[[ THIS FREEZES ENTIRE GAME DUE TO BEING SINGLE-THREADED!!!
