@@ -11,6 +11,12 @@ local assets=
     Asset("SOUND", "sound/tut08.fsb"),    
 }
 
+    -- ALLOW ATTACKING
+    local function canbeattacked(inst, attacked)
+        return not inst.sg:HasStateTag("flying")
+    end
+
+
 --This function creates a new entity based on a prefab.
 local function init_prefab()
 
@@ -29,11 +35,28 @@ local function init_prefab()
     --The build name is the name of the animation folder in spriter.
     anim:SetBuild("tut08")
 
+    inst:AddComponent("inspectable") -- Adding the Inspectable component
+
     --We need to add a 'locomotor' component otherwise our creature can't walk around the world.
     inst:AddComponent("locomotor")
-
     --Here we can tune how fast our creature runs forward.
     inst.components.locomotor.runspeed = 7
+
+    --ATTACKABLE
+    inst:AddComponent("combat")
+    inst.components.combat.hiteffectsymbol = "crow_body"
+    inst.components.combat.canbeattackedfn = canbeattacked
+    --HEALTH
+    inst:AddComponent("health")
+    inst.components.health:SetMaxHealth(100)
+    inst.components.health.murdersound = "dontstarve/wilson/hit_animal"
+    --LOOT DROPS
+    inst:AddComponent("lootdropper")
+    inst.components.lootdropper:AddRandomLoot("feather_", 1)
+    inst.components.lootdropper:AddRandomLoot("smallmeat", 1)
+    inst.components.lootdropper.numrandomloot = 1
+    inst.components.lootdropper.chanceloot = 1
+
 
     --We need to add a 'physics' component for our character to walk through the world.  Lucky for us, this
     --this is made easy for us by the 'MakeCharacterPhysics' function.  This function sets up physics,
