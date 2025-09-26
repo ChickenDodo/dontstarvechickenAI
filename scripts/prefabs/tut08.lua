@@ -16,7 +16,6 @@ local assets=
         return not inst.sg:HasStateTag("flying")
     end
 
-
 --This function creates a new entity based on a prefab.
 local function init_prefab()
 
@@ -46,6 +45,8 @@ local function init_prefab()
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "crow_body"
     inst.components.combat.canbeattackedfn = canbeattacked
+	inst.components.combat.canattack = true
+	inst.components.combat.defaultdamage = 10
     --HEALTH
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(100)
@@ -56,7 +57,6 @@ local function init_prefab()
     inst.components.lootdropper:AddRandomLoot("smallmeat", 1)
     inst.components.lootdropper.numrandomloot = 1
     inst.components.lootdropper.chanceloot = 1
-
 
     --We need to add a 'physics' component for our character to walk through the world.  Lucky for us, this
     --this is made easy for us by the 'MakeCharacterPhysics' function.  This function sets up physics,

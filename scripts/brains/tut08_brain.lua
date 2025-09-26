@@ -1,6 +1,7 @@
 require "behaviours/patrol"
 require "behaviours/followplayer"
 require "behaviours/journey"
+require "behaviours/chaseandram"
 
 --[[RunAway
 --This is the distance at which our creature will start fleeing.
@@ -27,6 +28,12 @@ local FOLLOW_PLAYER_MAX_DIST = 10
 --Flower Journey
 local JOURNEY_SEARCH_RADIUS = 20
 local JOURNEY_WAIT_TIME = 2
+
+--ChaseAndRam
+local max_chase_time = 10
+local give_up_dist = 20
+local max_charge_dist = 10
+local max_attacks = 2
 
 --function to return if a tallbirdegg is nearby
 local function IsTallbirdEggNear(inst, radius)
@@ -99,6 +106,9 @@ function tut08_brain:OnStart()
         --specify the distances we want to start and stop running at.
         --RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
 		
+		--Chase and Attack
+		ChaseAndRam(self.inst, max_chase_time, give_up_dist, max_charge_dist, max_attacks),
+		
         --Patrol if tallbirdegg is nearby
         WhileNode(function() 
             return IsTallbirdEggNear(self.inst, GROUND_SCAN_RADIUS)
@@ -106,7 +116,7 @@ function tut08_brain:OnStart()
             Patrol(self.inst, PATROL_POINT_RADIUS_SPAWN, NUMBER_OF_PATROL_POINTS, PATROL_WAIT_TIME)
         ),
 
-        -- WhileNode: follow player only if they have seeds
+        --Follow player only if they have seeds
         WhileNode(function()
             self.target = FollowPlayerWithSeedsRetargetFn(self.inst)
             return self.target ~= nil
@@ -114,7 +124,7 @@ function tut08_brain:OnStart()
             Follow(self.inst, FOLLOW_PLAYER_MINIMUM_DISTANCE, 5, 20) -- pass numbers/constants here
         ),
         
-        -- Go to nearest evergreen
+        -- Go to the nearest flower
         Journey(self.inst, JOURNEY_SEARCH_RADIUS, JOURNEY_WAIT_TIME),
 
         --Here we tell our creature that if it's not running away, it should simply stand still.
