@@ -1,5 +1,10 @@
 --Stategraphs are used to present feedback to the player based on the state of the creature.  Here we setup two states,
 --one to handle when the creature is idle and one to handle when the creature is running.
+local events=
+{
+EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then inst.sg:GoToState("hit") end end),
+}
+
 local states=
 {
 	--This handles the idle state.
@@ -73,6 +78,31 @@ local states=
     },    
 }
 
+    State{
+        name = "attack",
+        tags = {"attack", "busy"},
+
+        onenter = function(inst, target)
+            inst.sg.statemem.target = target
+            inst.Physics:Stop()
+            inst.components.combat:StartAttack()
+            inst.AnimState:PlayAnimation("atk_pre")
+            inst.AnimState:PushAnimation("atk", false)
+        end,
+
+        timeline=
+        {
+
+			TimeEvent(14*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/attack") end),
+            TimeEvent(16*FRAMES, function(inst) inst.components.combat:DoAttack(inst.sg.statemem.target) end),
+        },
+
+        events=
+        {
+            EventHandler("animqueueover", function(inst) if math.random() < .333 then inst.components.combat:SetTarget(nil) inst.sg:GoToState("taunt") else inst.sg:GoToState("idle", "atk_pst") end end),
+        },
+    },
+	
 --Event handlers are how stategraphs get told what happening with the prefab.  The stategraph then decides how it wants
 --to present that to the user which usually involves some combination of animation and audio.
 local event_handlers=
