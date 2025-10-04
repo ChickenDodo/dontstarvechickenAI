@@ -23,16 +23,13 @@ local GROUND_SCAN_RADIUS = 15 --this should be bigger than PATROL_POINT_RADIUS_S
 --Follow Player
 local FOLLOW_PLAYER_MINIMUM_DISTANCE = 2
 local FOLLOW_PLAYER_TARGET_DIST = 5
-local FOLLOW_PLAYER_MAX_DIST = 10
+local FOLLOW_PLAYER_MAX_DIST = 20
 
 --Flower Journey
 local JOURNEY_SEARCH_RADIUS = 20
 local JOURNEY_WAIT_TIME = 2
 
---ChaseAndAttack
-local max_chase_time = 10
-local give_up_dist = 20
-local max_attacks = 2
+
 
 --function to return if a tallbirdegg is nearby
 local function IsTallbirdEggNear(inst, radius)
@@ -48,7 +45,7 @@ end
 --[[ Doing it this way might not apply well as we might want to only trigger it with a tallbird egg, not other types of eggs
 local entity, distsq = FindClosestEntity(player, 20, false, {"tree"}, {"burnt"})
 if entity then
-    print("Found tree at distance:", math.sqrt(distsq))
+    print("Found tree at distance:", math.sqrt(distsq)) 
 end
 ]]
 
@@ -106,7 +103,7 @@ function tut08_brain:OnStart()
         --RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
 		
 		--Chase and Attack
-        ChaseAndAttack(self.inst, max_chase_time, give_up_dist, max_attacks, "player")
+        ChaseAndAttack(self.inst, 10, 20), -- MAX_CHASE_TIME = 10s, MAX_CHASE_DIST = 20 units
 		
         --Patrol if tallbirdegg is nearby
         WhileNode(function() 
@@ -120,7 +117,7 @@ function tut08_brain:OnStart()
             self.target = FollowPlayerWithSeedsRetargetFn(self.inst)
             return self.target ~= nil
         end, "FollowPlayerWithSeeds",
-            Follow(self.inst, FOLLOW_PLAYER_MINIMUM_DISTANCE, 5, 20) -- pass numbers/constants here
+            Follow(self.inst, FOLLOW_PLAYER_MINIMUM_DISTANCE, FOLLOW_PLAYER_TARGET_DIST, FOLLOW_PLAYER_MAX_DIST)
         ),
         
         -- Go to the nearest flower

@@ -11,17 +11,10 @@ local assets=
     Asset("SOUND", "sound/tut08.fsb"),    
 }
 
-    -- ALLOW ATTACKING
-    local function canbeattacked(inst, attacked)
-        return not inst.sg:HasStateTag("flying")
-    end
-
-local function OnNewTarget(inst, data)
-    if inst.components.sleeper:IsAsleep() then
-        inst.components.sleeper:WakeUp()
-    end
+-- ALLOW ATTACKING
+local function canbeattacked(inst, attacked)
+    return not inst.sg:HasStateTag("flying")
 end
-
 
 local function retargetfn(inst)
     local dist = TUNING.HOUND_TARGET_DIST
@@ -29,31 +22,17 @@ local function retargetfn(inst)
         dist = TUNING.HOUND_FOLLOWER_TARGET_DIST
     end
     return FindEntity(inst, dist, function(guy) 
-		return not guy:HasTag("wall") and not guy:HasTag("houndmound") and not (guy:HasTag("hound") or guy:HasTag("houndfriend")) and inst.components.combat:CanTarget(guy)
+        return not guy:HasTag("wall") 
+           and not guy:HasTag("houndmound") 
+           and not (guy:HasTag("hound") or guy:HasTag("houndfriend")) 
+           and inst.components.combat:CanTarget(guy)
     end)
 end
 
 local function KeepTarget(inst, target)
-    return inst.components.combat:CanTarget(target) and (not inst:HasTag("pet_hound") or inst:IsNear(target, TUNING.HOUND_FOLLOWER_TARGET_KEEP))
-end
-
-local function OnAttacked(inst, data)
-    inst.components.combat:SetTarget(data.attacker)
-    inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude:HasTag("hound") or dude:HasTag("houndfriend") and not dude.components.health:IsDead() end, 5)
-end
-
-local function OnAttackOther(inst, data)
-    inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude:HasTag("hound") or dude:HasTag("houndfriend") and not dude.components.health:IsDead() end, 5)
-end
-
-local function GetReturnPos(inst)
-    local rad = 2
-    local pos = inst:GetPosition()
-    trace("GetReturnPos", inst, pos)
-    local angle = math.random()*2*PI
-    pos = pos + Point(rad*math.cos(angle), 0, -rad*math.sin(angle))
-    trace("    ", pos)
-    return pos:Get()
+    return inst.components.combat:CanTarget(target) 
+       and (not inst:HasTag("pet_hound") 
+       or inst:IsNear(target, TUNING.HOUND_FOLLOWER_TARGET_KEEP))
 end
 
 --This function creates a new entity based on a prefab.
@@ -85,17 +64,16 @@ local function init_prefab()
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "crow_body"
     inst.components.combat.canbeattackedfn = canbeattacked
-	inst.components.combat.canattack = true
-	--inst.components.combat.defaultdamage = 10
-	--FIGHT BACK
-	inst.components.combat:SetDefaultDamage(TUNING.HOUND_DAMAGE)
-    inst.components.combat:SetAttackPeriod(TUNING.HOUND_ATTACK_PERIOD)
-    inst.components.combat:SetRetargetFunction(3, retargetfn)
+    inst.components.combat.canattack = true
+    inst.components.combat:SetDefaultDamage(20) -- dmg
+    inst.components.combat:SetRetargetFunction(1, retargetfn) -- Check for new targets every second
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
+
     --HEALTH
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(100)
     inst.components.health.murdersound = "dontstarve/wilson/hit_animal"
+
     --LOOT DROPS
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:AddRandomLoot("feather_", 1)
