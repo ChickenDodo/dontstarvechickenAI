@@ -1,7 +1,7 @@
 require "behaviours/patrol"
 require "behaviours/followplayer"
 require "behaviours/journey"
-require "behaviours/chaseandram"
+require "behaviours/chaseandattack"
 
 --[[RunAway
 --This is the distance at which our creature will start fleeing.
@@ -29,10 +29,9 @@ local FOLLOW_PLAYER_MAX_DIST = 10
 local JOURNEY_SEARCH_RADIUS = 20
 local JOURNEY_WAIT_TIME = 2
 
---ChaseAndRam
+--ChaseAndAttack
 local max_chase_time = 10
 local give_up_dist = 20
-local max_charge_dist = 10
 local max_attacks = 2
 
 --function to return if a tallbirdegg is nearby
@@ -107,7 +106,7 @@ function tut08_brain:OnStart()
         --RunAway(self.inst, "scarytoprey", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
 		
 		--Chase and Attack
-		ChaseAndRam(self.inst, max_chase_time, give_up_dist, max_charge_dist, max_attacks),
+        ChaseAndAttack(self.inst, max_chase_time, give_up_dist, max_attacks, "player")
 		
         --Patrol if tallbirdegg is nearby
         WhileNode(function() 
